@@ -4,3 +4,5 @@ report.pdf
 *.pyc
 db/history.db
 static/uploads/
+static/voice_en.mp3
+static/voice_te.mp3
