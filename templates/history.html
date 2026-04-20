@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History - AI Plant Doctor 🌱</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">🌱 AI Plant Doctor</div>
+        <div class="nav-links">
+            <a href="/"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="/history" class="active"><i class="fa-solid fa-clock-rotate-left"></i> History</a>
+        </div>
+    </nav>
+
+    <main class="dashboard-container">
+        <div class="dashboard-header animate-fade-up">
+            <h2>Prediction History</h2>
+            <p>Your past plant analysis records</p>
+        </div>
+
+        {% if history %}
+            <div class="history-grid">
+                {% for row in history %}
+                <div class="glass-card history-card animate-fade-up" style="animation-delay: {{ loop.index0 * 0.1 }}s;">
+                    <img src="{{ row['image_path'] }}" alt="Leaf" class="history-image">
+                    <div class="history-details">
+                        <h4>{{ row['result'] }}</h4>
+                        <div class="confidence-badge">{{ row['confidence'] }}% Confidence</div>
+                        <p class="timestamp"><i class="fa-regular fa-clock"></i> {{ row['timestamp'] }}</p>
+                        <button class="btn-delete" onclick="deleteHistory({{ row['id'] }})" title="Delete this record">
+                            <i class="fa-solid fa-trash-can"></i> Delete
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="glass-card empty-state animate-fade-up">
+                <i class="fa-solid fa-folder-open fa-3x"></i>
+                <h3>No History Found</h3>
+                <p>Upload a plant leaf image to start building your analysis history.</p>
+                <a href="/" class="btn-primary mt-3">Go to Home</a>
+            </div>
+        {% endif %}
+
+    </main>
+
+    <footer>
+        <p>Built with ❤️ for Farmers and Plant Lovers. AI Smart Plant Doctor &copy; 2026</p>
+    </footer>
+
+    <script>
+        function deleteHistory(id) {
+            if (confirm('Are you sure you want to delete this record?')) {
+                fetch(`/delete_history/${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'deleted') {
+                        alert('Record deleted successfully!');
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to delete record.');
+                });
+            }
+        }
+    </script>
+
+    <!-- Chatbot Widget -->
+    <div id="chatbot-widget" class="chatbot-widget collapsed">
+        <div class="chatbot-header" id="chatbot-header">
+            <span><i class="fa-solid fa-robot"></i> AI Farmer Assistant</span>
+            <i class="fa-solid fa-chevron-up" id="chatbot-toggle-icon"></i>
+        </div>
+        <div class="chatbot-body" id="chatbot-body">
+            <div class="chat-messages" id="chat-messages">
+                <div class="chat-message bot">
+                    Hello! I am your AI Farmer Assistant. Ask me anything about crop health, fertilizers, or diseases. (Telugu, English, Hindi supported)
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Ask a question..." autocomplete="off" />
+                <button id="chat-send-btn"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+.env
+__pycache__/
+report.pdf
+*.pyc
+db/history.db
+static/uploads/

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Smart Plant Doctor 🌱</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">🌱 AI Plant Doctor</div>
+        <div class="nav-links">
+            <a href="/"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="/history"><i class="fa-solid fa-clock-rotate-left"></i> History</a>
+        </div>
+    </nav>
+
+    {% if not result %}
+    <!-- HERO SECTION -->
+    <header class="hero animate-fade-up">
+        <div class="hero-content">
+            <h1>AI-Powered <span class="highlight">Plant Disease</span> Detection</h1>
+            <p>Upload a clear leaf image and get an instant AI diagnosis with complete treatment guidance.</p>
+            
+            <div class="upload-container glass-panel">
+                <form action="/predict" method="post" enctype="multipart/form-data" id="uploadForm">
+                    <div class="file-drop-area" id="file-drop-area">
+                        <i class="fa-solid fa-cloud-arrow-up fa-3x"></i>
+                        <p class="file-message">Drag & drop your leaf image here or click to browse</p>
+                        <input class="file-input" type="file" name="image" id="imageInput" accept="image/*" required>
+                    </div>
+                    
+                    <div class="camera-actions" id="cameraActionsContainer">
+                        <p class="or-divider"><span>OR</span></p>
+                        <button type="button" id="openCameraBtn" class="btn btn-secondary">
+                            <i class="fa-solid fa-camera"></i> Use Live Camera
+                        </button>
+                    </div>
+
+                    <div id="camera-container" style="display: none;">
+                        <video id="camera-video" autoplay playsinline></video>
+                        <div class="camera-controls">
+                            <button type="button" id="captureBtn" class="btn btn-primary"><i class="fa-solid fa-camera-retro"></i> Capture</button>
+                            <button type="button" id="closeCameraBtn" class="btn btn-danger"><i class="fa-solid fa-xmark"></i> Cancel</button>
+                        </div>
+                        <canvas id="camera-canvas" style="display: none;"></canvas>
+                    </div>
+
+                    <div id="imagePreviewContainer" style="display: none;">
+                        <img id="imagePreview" alt="Image Preview" />
+                    </div>
+                    {% if error %}
+                        <p class="error-msg"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</p>
+                    {% endif %}
+                    <button type="submit" class="btn-primary" id="analyzeBtn">
+                        <i class="fa-solid fa-microchip"></i> Analyze Plant
+                    </button>
+                </form>
+            </div>
+        </div>
+    </header>
+    {% endif %}
+
+    {% if result %}
+    <!-- RESULTS DASHBOARD -->
+    <main class="dashboard-container">
+        
+        <div class="dashboard-header">
+            <h2>Diagnosis Complete</h2>
+            <p>Here is your comprehensive plant health report.</p>
+        </div>
+
+        <div class="grid-layout">
+            
+            <!-- COLUMN 1: IMAGE & CORE RESULT -->
+            <div class="column animate-fade-up delay-1">
+                <div class="glass-card result-card">
+                    <img src="{{ image_path }}" alt="Analyzed Leaf" class="result-image">
+                    <h3 class="disease-name">{{ result }}</h3>
+                    <div class="confidence-container">
+                        <div class="confidence-header">
+                            <span>AI Confidence</span>
+                            <span>{{ confidence }}%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" data-width="{{ confidence }}%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="voice-assistant">
+                        <h4><i class="fa-solid fa-volume-high"></i> Voice Assistant (English)</h4>
+                        <audio controls class="custom-audio" style="margin-bottom: 15px;">
+                            <source src="{{ url_for('static', filename='voice_en.mp3') }}" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                        <h4><i class="fa-solid fa-volume-high"></i> Voice Assistant (తెలుగు)</h4>
+                        <audio controls class="custom-audio">
+                            <source src="{{ url_for('static', filename='voice_te.mp3') }}" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+
+                    <div class="action-buttons">
+                        <a href="/download" class="btn btn-pdf"><i class="fa-solid fa-file-pdf"></i> Download PDF</a>
+                        <a href="{{ whatsapp_url }}" target="_blank" class="btn btn-whatsapp"><i class="fa-brands fa-whatsapp"></i> Share</a>
+                    </div>
+                </div>
+
+                <!-- TOP PREDICTIONS -->
+                <div class="glass-card">
+                    <h4><i class="fa-solid fa-list-ol"></i> Top Predictions</h4>
+                    <ul class="top-predictions">
+                        {% for item in top3 %}
+                            <li>
+                                <span class="pred-label">{{ item.label }}</span>
+                                <span class="pred-conf">{{ item.conf }}%</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- COLUMN 2: TREATMENT & WEATHER -->
+            <div class="column column-large animate-fade-up delay-2">
+                
+                <!-- WEATHER INTELLIGENCE -->
+                <div class="glass-card weather-card">
+                    <h4><i class="fa-solid fa-cloud-sun-rain"></i> Weather Intelligence</h4>
+                    <div class="weather-grid">
+                        <div class="weather-item">
+                            <i class="fa-solid fa-temperature-half"></i>
+                            <span class="value">{{ weather.temp }}°C</span>
+                            <span class="label">Temp</span>
+                        </div>
+                        <div class="weather-item">
+                            <i class="fa-solid fa-droplet"></i>
+                            <span class="value">{{ weather.humidity }}%</span>
+                            <span class="label">Humidity</span>
+                        </div>
+                        <div class="weather-item">
+                            <i class="fa-solid fa-cloud-showers-heavy"></i>
+                            <span class="value">{{ weather.rain }}mm</span>
+                            <span class="label">Rain</span>
+                        </div>
+                        <div class="weather-item">
+                            <i class="fa-solid fa-wind"></i>
+                            <span class="value">{{ weather.wind }}km/h</span>
+                            <span class="label">Wind</span>
+                        </div>
+                    </div>
+                    <div class="weather-alert {{ 'danger' if 'High risk' in weather.alert else 'safe' }}">
+                        <i class="fa-solid fa-circle-info"></i> {{ weather.alert }}
+                    </div>
+                </div>
+
+                <!-- TREATMENT PROTOCOL -->
+                <div class="glass-card treatment-card animate-fade-up delay-3">
+                    <h4><i class="fa-solid fa-pills"></i> Treatment Protocol</h4>
+                    
+                    <div class="treatment-section">
+                        <h5>Medicines</h5>
+                        <div class="pill-container">
+                            {% for med in medicine %}
+                                <span class="pill pill-med">{{ med }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="treatment-section">
+                        <h5>Fertilizers</h5>
+                        <div class="pill-container">
+                            {% for fert in fertilizer %}
+                                <span class="pill pill-fert">{{ fert }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="treatment-section dosage">
+                        <h5><i class="fa-solid fa-flask"></i> Recommended Dosage</h5>
+                        <p>{{ dosage }}</p>
+                    </div>
+
+                    <!-- ECOMMERCE LINKS -->
+                    <div class="ecommerce-links">
+                        <h5>Buy Medicines Online</h5>
+                        <div class="shop-buttons">
+                            <a href="{{ links.amazon }}" target="_blank" class="shop-btn amazon">Amazon <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                            <a href="{{ links.flipkart }}" target="_blank" class="shop-btn flipkart">Flipkart <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                            <a href="{{ links.bighaat }}" target="_blank" class="shop-btn bighaat">BigHaat <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PREVENTION -->
+                <div class="glass-card prevention-card animate-fade-up delay-4">
+                    <h4><i class="fa-solid fa-shield-halved"></i> Preventive Measures</h4>
+                    <ul class="prevention-list">
+                        {% for p in prevention %}
+                            <li><i class="fa-solid fa-check"></i> {{ p }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+        
+        <div class="analyze-again">
+            <a href="/" class="btn-primary"><i class="fa-solid fa-rotate-left"></i> Analyze Another Plant</a>
+        </div>
+    </main>
+    {% endif %}
+
+    <!-- Footer -->
+    <footer>
+        <p>Built with ❤️ for Farmers and Plant Lovers. AI Smart Plant Doctor &copy; 2026</p>
+    </footer>
+
+    <!-- Chatbot Widget -->
+    <div id="chatbot-widget" class="chatbot-widget collapsed">
+        <div class="chatbot-header" id="chatbot-header">
+            <span><i class="fa-solid fa-robot"></i> AI Farmer Assistant</span>
+            <i class="fa-solid fa-chevron-up" id="chatbot-toggle-icon"></i>
+        </div>
+        <div class="chatbot-body" id="chatbot-body">
+            <div class="chat-messages" id="chat-messages">
+                <div class="chat-message bot">
+                    Hello! I am your AI Farmer Assistant. Ask me anything about crop health, fertilizers, or diseases. (Telugu, English, Hindi supported)
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Ask a question..." autocomplete="off" />
+                <button id="chat-send-btn"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+Flask
+tensorflow
+numpy
+opencv-python-headless
+gTTS
+pickle-mixin
+requests
+python-dotenv
+google-generativeai
+reportlab
+gunicorn
