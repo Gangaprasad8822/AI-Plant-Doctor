@@ -1,11 +1,10 @@
-Flask
-tensorflow
+flask
+gunicorn
+tensorflow-cpu
 numpy
 opencv-python-headless
 gTTS
-pickle-mixin
 requests
+reportlab
 python-dotenv
 google-generativeai
-reportlab
-gunicorn

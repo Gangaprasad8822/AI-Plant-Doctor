@@ -56,6 +56,21 @@
                     <div id="imagePreviewContainer" style="display: none;">
                         <img id="imagePreview" alt="Image Preview" />
                     </div>
+                    {% if weather %}
+                    <div class="live-weather-badge animate-fade-up">
+                        <i class="fa-solid fa-location-dot"></i> 
+                        <span id="cityName"><strong>{{ weather.city }}:</strong> {{ weather.temp }}°C</span>
+                        <button type="button" class="btn-change-city" onclick="toggleCityInput()"><i class="fa-solid fa-pen-to-square"></i></button>
+                        
+                        <div id="cityInputContainer" style="display: none; margin-top: 10px;">
+                            <input type="text" id="newCityInput" placeholder="Enter city name..." class="city-input-field">
+                            <button type="button" onclick="updateCity()" class="btn-city-save">Save</button>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <input type="hidden" name="city" id="hiddenCityInput" value="{{ weather.city if weather else 'Hyderabad' }}">
+                    
                     {% if error %}
                         <p class="error-msg"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</p>
                     {% endif %}

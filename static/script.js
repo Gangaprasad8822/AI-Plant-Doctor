@@ -1,4 +1,27 @@
+// --- CITY WEATHER LOGIC ---
+function toggleCityInput() {
+    const container = document.getElementById('cityInputContainer');
+    if (container) {
+        container.style.display = container.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+function updateCity() {
+    const newCity = document.getElementById('newCityInput').value.trim();
+    if (newCity) {
+        window.location.href = `/?city=${encodeURIComponent(newCity)}`;
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+    // Update hidden city input if it exists
+    const params = new URLSearchParams(window.location.search);
+    const cityParam = params.get('city');
+    if (cityParam) {
+        const hiddenInput = document.getElementById('hiddenCityInput');
+        if (hiddenInput) hiddenInput.value = cityParam;
+    }
+
     
     // File Upload Logic
     const fileDropArea = document.querySelector(".file-drop-area");

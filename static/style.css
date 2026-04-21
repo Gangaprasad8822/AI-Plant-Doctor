@@ -918,3 +918,59 @@ footer {
     width: 100%;
     justify-content: center;
 }
+
+/* Live Weather Badge */
+.live-weather-badge {
+    background: rgba(46, 204, 113, 0.1);
+    border: 1px solid rgba(46, 204, 113, 0.3);
+    padding: 10px 20px;
+    border-radius: 50px;
+    margin-bottom: 25px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.live-weather-badge i {
+    color: var(--primary);
+    font-size: 1.2rem;
+}
+
+.btn-change-city {
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.6);
+    cursor: pointer;
+    margin-left: 10px;
+    font-size: 1rem;
+    transition: var(--transition);
+}
+.btn-change-city:hover { color: var(--primary); transform: scale(1.1); }
+
+.city-input-field {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: white;
+    font-family: inherit;
+    outline: none;
+    width: 150px;
+}
+.btn-city-save {
+    background: var(--primary);
+    color: #000;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-left: 5px;
+}
+
+
